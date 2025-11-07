@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍅 Tomato Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tomato-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .timer-display {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timer-circle {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+        }
+
+        .timer-background {
+            fill: none;
+            stroke: #f0f0f0;
+            stroke-width: 8;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            font-weight: 200;
+            color: #333;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.pause {
+            background: linear-gradient(135deg, #ffa502, #ff6348);
+            box-shadow: 0 4px 15px rgba(255, 165, 2, 0.3);
+        }
+
+        .btn.pause:hover {
+            box-shadow: 0 6px 20px rgba(255, 165, 2, 0.4);
+        }
+
+        .btn.reset {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        }
+
+        .btn.reset:hover {
+            box-shadow: 0 6px 20px rgba(162, 155, 254, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .auto-mode-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .break-settings-btn {
+            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .break-settings-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 210, 211, 0.3);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            width: 90%;
+            animation: popupSlide 0.3s ease;
+        }
+
+        @keyframes popupSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .popup h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .popup-content {
+            margin-bottom: 20px;
+        }
+
+        .popup-input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .popup-input {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .popup-input:focus {
+            outline: none;
+            border-color: #00d2d3;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .popup-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .popup-btn.save {
+            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+            color: white;
+        }
+
+        .popup-btn.cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .urgency-mode {
+            animation: urgencyPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes urgencyPulse {
+            0% {
+                box-shadow: 0 25px 50px rgba(255, 107, 107, 0.15);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 35px 70px rgba(255, 107, 107, 0.3);
+                transform: scale(1.02);
+            }
+            100% {
+                box-shadow: 0 45px 90px rgba(255, 107, 107, 0.45);
+                transform: scale(1.04);
+            }
+        }
+
+        .urgency-mode .timer-text {
+            animation: urgencyText 1s ease-in-out infinite alternate;
+            color: #ff6b6b;
+        }
+
+        @keyframes urgencyText {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .notification-permission {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #48c774, #3ec46d);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(72, 199, 116, 0.4);
+            font-size: 0.9em;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .notification-debug {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            font-size: 0.85em;
+            max-width: 350px;
+            display: none;
+        }
+
+        .notification-debug.show {
+            display: block;
+        }
+
+        .debug-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .debug-info {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .debug-status {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .debug-status.success {
+            background: #48c774;
+            color: white;
+        }
+
+        .debug-status.error {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .debug-status.warning {
+            background: #ffa502;
+            color: white;
+        }
+
+        .test-notification-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .test-notification-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .close-debug {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-debug:hover {
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification-permission.error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .notification-permission.hide {
+            animation: slideOut 0.3s ease forwards;
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .settings {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .setting-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .setting-group label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .setting-group input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .setting-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .manual-set {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .manual-set input {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .manual-set button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .manual-set button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 210, 211, 0.3);
+        }
+
+        .notification-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .notification-badge.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .timer-circle {
+                width: 160px;
+                height: 160px;
+            }
+
+            .timer-text {
+                font-size: 2em;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="tomato-icon">🍅</div>
+            <h1>Tomato Timer</h1>
+        </header>
+
+        <main>
+            <div class="timer-display">
+                <div class="timer-circle">
+                    <svg width="200" height="200" class="timer-svg">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ee5a24;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="90" class="timer-background"></circle>
+                        <circle cx="100" cy="100" r="90" class="timer-progress"
+                                stroke-dasharray="565.48"
+                                stroke-dashoffset="565.48"></circle>
+                    </svg>
+                    <div class="timer-text">20:00</div>
+                </div>
+                <div class="status">Ready to focus</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn start" id="startBtn">Start</button>
+                <button class="btn pause" id="pauseBtn" disabled>Pause</button>
+                <button class="btn reset" id="resetBtn">Reset</button>
+            </div>
+
+            <section class="settings">
+                <div class="setting-group">
+                    <label>Focus Duration:</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="number" id="focusDurationInput" min="1" max="120" value="20" style="width: 60px; padding: 6px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center;">
+                        <span>minutes</span>
+                        <button class="break-settings-btn" id="resetDurationBtn" title="Reset to default">↺</button>
+                    </div>
+                </div>
+
+                <div class="auto-mode-container">
+                    <label>Auto Mode:</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="toggle-switch" id="autoModeToggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <button class="break-settings-btn" id="breakSettingsBtn">Break: 3m</button>
+                    </div>
+                </div>
+
+                <div class="manual-set">
+                    <input type="number" id="manualMinutes" placeholder="Min" min="0" max="59">
+                    <input type="number" id="manualSeconds" placeholder="Sec" min="0" max="59">
+                    <button id="setManualBtn">Set Time</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="notification-permission" id="permissionIndicator">
+        <span>🔔</span>
+        <span id="permissionText">Requesting notification permission...</span>
+    </div>
+
+    <div class="notification-debug" id="notificationDebug">
+        <div class="debug-header">
+            <span>🔍 Notification Debug</span>
+            <button class="close-debug" id="closeDebugBtn">×</button>
+        </div>
+        <div class="debug-info">Browser: <span id="browserInfo" class="debug-status">Checking...</span></div>
+        <div class="debug-info">API Support: <span id="apiSupport" class="debug-status">Checking...</span></div>
+        <div class="debug-info">Permission: <span id="permissionStatus" class="debug-status">Checking...</span></div>
+        <div class="debug-info">Windows Settings: <span id="windowsSettings" class="debug-status">Checking...</span></div>
+        <div class="debug-info">Test Result: <span id="testResult" class="debug-status">Not tested</span></div>
+
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+            <div style="font-weight: bold; color: #333; margin-bottom: 8px;">🛠️ Windows Troubleshooting:</div>
+            <div style="font-size: 0.8em; color: #666; line-height: 1.4;">
+                <div style="margin-bottom: 5px;">1. <strong>Windows Settings → System → Notifications</strong></div>
+                <div style="margin-bottom: 5px;">→ Enable "Get notifications from apps"</div>
+                <div style="margin-bottom: 5px;">→ Check your browser is allowed</div>
+                <div style="margin-bottom: 5px;">2. <strong>Focus Assist</strong> might be blocking notifications</div>
+                <div style="margin-bottom: 5px;">3. Check <strong>Action Center</strong> (bottom right corner)</div>
+                <div style="margin-bottom: 5px;">4. Browser: Settings → Privacy → Notifications</div>
+            </div>
+        </div>
+
+        <button class="test-notification-btn" id="testNotificationBtn">🧪 Test System Notification</button>
+        <button class="test-notification-btn" id="testSimpleBtn" style="background: linear-gradient(135deg, #48c774, #3ec46d); margin-top: 5px;">📢 Simple Notification</button>
+        <button class="test-notification-btn" id="testPersistentBtn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); margin-top: 5px;">📍 Persistent Notification</button>
+        <button class="test-notification-btn" id="testAlertBtn" style="background: linear-gradient(135deg, #ffa502, #ff6348); margin-top: 5px;">🔊 Test Alert Sound</button>
+        <button class="test-notification-btn" id="openSettingsBtn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-top: 5px;">⚙️ Open Windows Settings</button>
+        <button class="test-notification-btn" id="runDiagnosticBtn" style="background: linear-gradient(135deg, #636e72, #2d3436); margin-top: 5px;">🔬 Run Full Diagnostic</button>
+
+        <div id="diagnosticResults" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; display: none;">
+            <div style="font-weight: bold; color: #333; margin-bottom: 8px;">🔍 Diagnostic Results:</div>
+            <div id="diagnosticInfo" style="font-size: 0.8em; color: #666; line-height: 1.4;"></div>
+        </div>
+    </div>
+
+    <div class="notification-badge" id="notification">
+        <strong>⏰ Time's up!</strong><br>
+        Time for a break! 🎉
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <h3>⚙️ Break Duration Settings</h3>
+            <div class="popup-content">
+                <p style="text-align: center; color: #666; margin-bottom: 15px;">Set your break duration</p>
+                <div class="popup-input-group">
+                    <input type="number" class="popup-input" id="breakMinutesInput" min="1" max="30" value="3">
+                    <span style="color: #666;">minutes</span>
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn cancel" id="popupCancelBtn">Cancel</button>
+                <button class="popup-btn save" id="popupSaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TomatoTimer {
+            constructor() {
+                this.timeLeft = 20 * 60; // 20 minutes in seconds
+                this.totalTime = 20 * 60;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.interval = null;
+                this.notificationInterval = 20; // minutes
+                this.autoMode = false;
+                this.breakDuration = 3; // minutes
+                this.isBreakTime = false;
+                this.notificationsEnabled = false;
+                this.userInteracted = false;
+
+                this.initElements();
+                this.bindEvents();
+                this.createAudioContext();
+                this.initNotificationDebug();
+                this.initUserInteractionTracking();
+                this.requestNotificationPermission();
+                this.updateDisplay();
+                this.updateIntervalLabel();
+            }
+
+            initElements() {
+                this.timerText = document.querySelector('.timer-text');
+                this.statusText = document.querySelector('.status');
+                this.startBtn = document.getElementById('startBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.focusDurationInput = document.getElementById('focusDurationInput');
+                this.resetDurationBtn = document.getElementById('resetDurationBtn');
+                this.manualMinutes = document.getElementById('manualMinutes');
+                this.manualSeconds = document.getElementById('manualSeconds');
+                this.setManualBtn = document.getElementById('setManualBtn');
+                this.progressBar = document.querySelector('.timer-progress');
+                this.notification = document.getElementById('notification');
+                this.autoModeToggle = document.getElementById('autoModeToggle');
+                this.breakSettingsBtn = document.getElementById('breakSettingsBtn');
+                this.popupOverlay = document.getElementById('popupOverlay');
+                this.breakMinutesInput = document.getElementById('breakMinutesInput');
+                this.popupSaveBtn = document.getElementById('popupSaveBtn');
+                this.popupCancelBtn = document.getElementById('popupCancelBtn');
+                this.permissionIndicator = document.getElementById('permissionIndicator');
+                this.permissionText = document.getElementById('permissionText');
+                this.notificationDebug = document.getElementById('notificationDebug');
+                this.closeDebugBtn = document.getElementById('closeDebugBtn');
+                this.testNotificationBtn = document.getElementById('testNotificationBtn');
+                this.testSimpleBtn = document.getElementById('testSimpleBtn');
+                this.testPersistentBtn = document.getElementById('testPersistentBtn');
+                this.testAlertBtn = document.getElementById('testAlertBtn');
+                this.openSettingsBtn = document.getElementById('openSettingsBtn');
+                this.runDiagnosticBtn = document.getElementById('runDiagnosticBtn');
+                this.diagnosticResults = document.getElementById('diagnosticResults');
+                this.diagnosticInfo = document.getElementById('diagnosticInfo');
+                this.browserInfo = document.getElementById('browserInfo');
+                this.apiSupport = document.getElementById('apiSupport');
+                this.permissionStatus = document.getElementById('permissionStatus');
+                this.windowsSettings = document.getElementById('windowsSettings');
+                this.testResult = document.getElementById('testResult');
+
+                const circumference = 2 * Math.PI * 90;
+                this.progressBar.style.strokeDasharray = circumference;
+                this.progressBar.style.strokeDashoffset = circumference;
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => this.start());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.resetBtn.addEventListener('click', () => this.reset());
+                this.setManualBtn.addEventListener('click', () => this.setManualTime());
+                this.autoModeToggle.addEventListener('click', () => this.toggleAutoMode());
+                this.breakSettingsBtn.addEventListener('click', () => this.openBreakSettings());
+                this.popupSaveBtn.addEventListener('click', () => this.saveBreakSettings());
+                this.popupCancelBtn.addEventListener('click', () => this.closeBreakSettings());
+                this.popupOverlay.addEventListener('click', (e) => {
+                    if (e.target === this.popupOverlay) {
+                        this.closeBreakSettings();
+                    }
+                });
+                this.focusDurationInput.addEventListener('change', () => this.updateFocusDuration());
+                this.focusDurationInput.addEventListener('input', () => this.validateFocusDurationInput());
+                this.resetDurationBtn.addEventListener('click', () => this.resetFocusDuration());
+                this.closeDebugBtn.addEventListener('click', () => this.closeDebugPanel());
+                this.testNotificationBtn.addEventListener('click', () => this.testSystemNotification());
+                this.testSimpleBtn.addEventListener('click', () => this.testSimpleNotification());
+                this.testPersistentBtn.addEventListener('click', () => this.testPersistentNotification());
+                this.testAlertBtn.addEventListener('click', () => this.testAlertSound());
+                this.openSettingsBtn.addEventListener('click', () => this.openWindowsSettings());
+                this.runDiagnosticBtn.addEventListener('click', () => this.runComprehensiveDiagnostic());
+            }
+
+            createAudioContext() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            initUserInteractionTracking() {
+                // Mark user as interacted when they click anywhere on the page
+                const enableVibration = () => {
+                    this.userInteracted = true;
+                    // Remove listeners after first interaction
+                    document.removeEventListener('click', enableVibration);
+                    document.removeEventListener('keydown', enableVibration);
+                    document.removeEventListener('touchstart', enableVibration);
+                };
+
+                // Add listeners for various user interactions
+                document.addEventListener('click', enableVibration);
+                document.addEventListener('keydown', enableVibration);
+                document.addEventListener('touchstart', enableVibration);
+            }
+
+            safeVibrate(pattern) {
+                // Only vibrate if user has interacted with the page
+                if (this.userInteracted && 'vibrate' in navigator) {
+                    try {
+                        navigator.vibrate(pattern);
+                    } catch (error) {
+                        console.log('Vibration failed:', error);
+                    }
+                }
+            }
+
+            async requestNotificationPermission() {
+                if ('Notification' in window) {
+                    try {
+                        // Update debug info
+                        this.updateDebugInfo();
+
+                        // Check current permission first
+                        if (Notification.permission === 'granted') {
+                            this.notificationsEnabled = true;
+                            this.permissionText.textContent = 'Notifications enabled! 🔔';
+                            this.permissionIndicator.classList.remove('error');
+                            setTimeout(() => {
+                                this.permissionIndicator.classList.add('hide');
+                                setTimeout(() => {
+                                    this.permissionIndicator.style.display = 'none';
+                                }, 300);
+                            }, 2000);
+                            // Send a test notification to confirm it works
+                            setTimeout(() => {
+                                this.sendTestNotification();
+                                this.updateDebugInfo();
+                            }, 500);
+                            return;
+                        }
+
+                        if (Notification.permission === 'denied') {
+                            this.showNotificationRetryUI();
+                            this.updateDebugInfo();
+                            return;
+                        }
+
+                        // Request permission with a user gesture
+                        const permission = await Notification.requestPermission();
+                        this.notificationsEnabled = permission === 'granted';
+
+                        if (this.notificationsEnabled) {
+                            this.permissionText.textContent = 'Notifications enabled! 🔔';
+                            this.permissionIndicator.classList.remove('error');
+                            // Send a test notification to confirm it works
+                            setTimeout(() => {
+                                this.sendTestNotification();
+                                this.updateDebugInfo();
+                            }, 500);
+                            setTimeout(() => {
+                                this.permissionIndicator.classList.add('hide');
+                                setTimeout(() => {
+                                    this.permissionIndicator.style.display = 'none';
+                                }, 300);
+                            }, 3000);
+                        } else {
+                            this.showNotificationRetryUI();
+                            this.updateDebugInfo();
+                        }
+                    } catch (error) {
+                        console.error('Notification permission error:', error);
+                        this.permissionText.textContent = 'Notification error ❌ Click to retry';
+                        this.permissionIndicator.classList.add('error');
+                        this.permissionIndicator.style.cursor = 'pointer';
+                        this.setupRetryButton();
+                        this.updateDebugInfo();
+                    }
+                } else {
+                    this.permissionText.textContent = 'Browser not supported ⚠️';
+                    this.permissionIndicator.classList.add('error');
+                    setTimeout(() => {
+                        this.permissionIndicator.classList.add('hide');
+                        setTimeout(() => {
+                            this.permissionIndicator.style.display = 'none';
+                        }, 300);
+                    }, 3000);
+                    this.updateDebugInfo();
+                }
+            }
+
+            showNotificationRetryUI() {
+                this.permissionText.textContent = 'Notifications blocked ⚠️ Click to enable';
+                this.permissionIndicator.classList.add('error');
+                this.permissionIndicator.style.cursor = 'pointer';
+                this.setupRetryButton();
+                // Don't hide the indicator - keep it visible for retry
+            }
+
+            setupRetryButton() {
+                // Remove previous listeners to avoid duplicates
+                const newIndicator = this.permissionIndicator.cloneNode(true);
+                this.permissionIndicator.parentNode.replaceChild(newIndicator, this.permissionIndicator);
+                this.permissionIndicator = newIndicator;
+                this.permissionText = document.getElementById('permissionText');
+
+                this.permissionIndicator.addEventListener('click', () => {
+                    this.permissionText.textContent = 'Requesting permission...';
+                    this.requestNotificationPermission();
+                });
+            }
+
+            sendTestNotification() {
+                if (this.notificationsEnabled) {
+                    const notification = new Notification('🍅 Tomato Timer Ready!', {
+                        body: 'Notifications are working perfectly! You\'ll get alerts when your timer completes.',
+                        icon: 'data:image/svg+xml;base64,' + btoa(`
+                            <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="64" cy="64" r="60" fill="#ff6b6b"/>
+                                <circle cx="50" cy="55" r="8" fill="white"/>
+                                <circle cx="78" cy="55" r="8" fill="white"/>
+                                <path d="M 45 75 Q 64 85 83 75" stroke="white" stroke-width="4" fill="none"/>
+                            </svg>
+                        `),
+                        tag: 'tomato-timer-test',
+                        requireInteraction: false
+                    });
+
+                    setTimeout(() => notification.close(), 3000);
+
+                    this.safeVibrate([100]);
+                }
+            }
+
+            initNotificationDebug() {
+                // Show debug panel if notifications might have issues
+                setTimeout(() => {
+                    this.showDebugPanel();
+                }, 3000);
+
+                this.updateDebugInfo();
+            }
+
+            showDebugPanel() {
+                this.notificationDebug.classList.add('show');
+                // Auto-run diagnostic after a short delay
+                setTimeout(() => {
+                    this.runComprehensiveDiagnostic();
+                }, 1000);
+            }
+
+            closeDebugPanel() {
+                this.notificationDebug.classList.remove('show');
+            }
+
+            updateDebugInfo() {
+                // Browser info
+                const userAgent = navigator.userAgent;
+                let browserName = 'Unknown';
+                if (userAgent.includes('Chrome')) browserName = 'Chrome';
+                else if (userAgent.includes('Firefox')) browserName = 'Firefox';
+                else if (userAgent.includes('Edge')) browserName = 'Edge';
+                else if (userAgent.includes('Safari')) browserName = 'Safari';
+
+                this.browserInfo.textContent = browserName;
+                this.browserInfo.className = 'debug-status success';
+
+                // API Support
+                const hasNotification = 'Notification' in window;
+                this.apiSupport.textContent = hasNotification ? 'Supported' : 'Not Supported';
+                this.apiSupport.className = hasNotification ? 'debug-status success' : 'debug-status error';
+
+                // Permission Status
+                const permission = Notification.permission;
+                this.permissionStatus.textContent = permission;
+                if (permission === 'granted') {
+                    this.permissionStatus.className = 'debug-status success';
+                } else if (permission === 'denied') {
+                    this.permissionStatus.className = 'debug-status error';
+                } else {
+                    this.permissionStatus.className = 'debug-status warning';
+                }
+
+                // Windows Settings (approximate detection)
+                this.checkWindowsSettings();
+            }
+
+            checkWindowsSettings() {
+                // Check if we're on Windows
+                const isWindows = navigator.userAgent.includes('Windows');
+                if (!isWindows) {
+                    this.windowsSettings.textContent = 'Not Windows';
+                    this.windowsSettings.className = 'debug-status warning';
+                    return;
+                }
+
+                // Try to detect Windows notification settings
+                const permission = Notification.permission;
+                if (permission === 'granted') {
+                    this.windowsSettings.textContent = 'Enabled';
+                    this.windowsSettings.className = 'debug-status success';
+                } else if (permission === 'denied') {
+                    this.windowsSettings.textContent = 'Blocked - Check Settings';
+                    this.windowsSettings.className = 'debug-status error';
+                } else {
+                    this.windowsSettings.textContent = 'Not Requested';
+                    this.windowsSettings.className = 'debug-status warning';
+                }
+            }
+
+            testSystemNotification() {
+                this.testResult.textContent = 'Testing...';
+                this.testResult.className = 'debug-status warning';
+
+                if (!this.notificationsEnabled) {
+                    this.testResult.textContent = 'Permission Required';
+                    this.testResult.className = 'debug-status error';
+                    return;
+                }
+
+                try {
+                    const notification = new Notification('🧪 Test Notification', {
+                        body: 'This is a test system notification from Tomato Timer. If you see this outside your browser, notifications are working!',
+                        icon: 'data:image/svg+xml;base64,' + btoa(`
+                            <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="64" cy="64" r="60" fill="#667eea"/>
+                                <rect x="45" y="45" width="38" height="38" fill="white" rx="4"/>
+                                <circle cx="64" cy="64" r="8" fill="#667eea"/>
+                            </svg>
+                        `),
+                        tag: 'tomato-test-' + Date.now(),
+                        requireInteraction: true,
+                        silent: false
+                    });
+
+                    notification.onclick = () => {
+                        notification.close();
+                        this.testResult.textContent = 'Success - Clicked!';
+                        this.testResult.className = 'debug-status success';
+                    };
+
+                    // Auto-update test result after 2 seconds if not clicked
+                    setTimeout(() => {
+                        if (this.testResult.textContent === 'Testing...') {
+                            this.testResult.textContent = 'Sent - Check Action Center';
+                            this.testResult.className = 'debug-status success';
+                        }
+                    }, 2000);
+
+                    // Auto-close after 10 seconds
+                    setTimeout(() => {
+                        notification.close();
+                    }, 10000);
+
+                    this.safeVibrate([100, 50, 100]);
+
+                } catch (error) {
+                    this.testResult.textContent = 'Error: ' + error.message;
+                    this.testResult.className = 'debug-status error';
+                }
+            }
+
+            testAlertSound() {
+                this.testResult.textContent = 'Playing sound...';
+                this.testResult.className = 'debug-status warning';
+
+                try {
+                    // Play a test sound to ensure audio works
+                    this.playSound('focus');
+
+                    setTimeout(() => {
+                        this.testResult.textContent = 'Sound played - Check volume';
+                        this.testResult.className = 'debug-status success';
+                    }, 1000);
+
+                    this.safeVibrate([200]);
+
+                } catch (error) {
+                    this.testResult.textContent = 'Sound Error: ' + error.message;
+                    this.testResult.className = 'debug-status error';
+                }
+            }
+
+            openWindowsSettings() {
+                // Try to open Windows notification settings
+                const settingsUrls = [
+                    'ms-settings:notifications',
+                    'ms-settings:quietmoments',
+                    'ms-settings:privacy-notifications'
+                ];
+
+                let opened = false;
+                for (const url of settingsUrls) {
+                    try {
+                        window.open(url, '_blank');
+                        opened = true;
+                        break;
+                    } catch (error) {
+                        continue;
+                    }
+                }
+
+                if (!opened) {
+                    // Fallback to browser notification settings
+                    const browser = navigator.userAgent.toLowerCase();
+                    let settingsUrl = '';
+
+                    if (browser.includes('chrome')) {
+                        settingsUrl = 'chrome://settings/content/notifications';
+                    } else if (browser.includes('firefox')) {
+                        settingsUrl = 'about:preferences#privacy';
+                    } else if (browser.includes('edge')) {
+                        settingsUrl = 'edge://settings/content/notifications';
+                    }
+
+                    if (settingsUrl) {
+                        try {
+                            window.open(settingsUrl, '_blank');
+                        } catch (error) {
+                            this.testResult.textContent = 'Could not open settings';
+                            this.testResult.className = 'debug-status error';
+                        }
+                    }
+                }
+            }
+
+            testSimpleNotification() {
+                this.testResult.textContent = 'Testing simple...';
+                this.testResult.className = 'debug-status warning';
+
+                if (!this.notificationsEnabled) {
+                    this.testResult.textContent = 'Permission Required';
+                    this.testResult.className = 'debug-status error';
+                    return;
+                }
+
+                try {
+                    // Very basic notification
+                    const notification = new Notification('Simple Test', {
+                        body: 'Basic notification test',
+                        tag: 'simple-test-' + Date.now()
+                    });
+
+                    setTimeout(() => {
+                        this.testResult.textContent = 'Simple sent - Check Action Center';
+                        this.testResult.className = 'debug-status success';
+                    }, 1000);
+
+                    setTimeout(() => notification.close(), 5000);
+
+                } catch (error) {
+                    this.testResult.textContent = 'Simple Error: ' + error.message;
+                    this.testResult.className = 'debug-status error';
+                }
+            }
+
+            testPersistentNotification() {
+                this.testResult.textContent = 'Testing persistent...';
+                this.testResult.className = 'debug-status warning';
+
+                if (!this.notificationsEnabled) {
+                    this.testResult.textContent = 'Permission Required';
+                    this.testResult.className = 'debug-status error';
+                    return;
+                }
+
+                try {
+                    // Persistent notification with different parameters
+                    const notification = new Notification('🔔 PERSISTENT TEST', {
+                        body: 'This notification requires interaction to dismiss. Check your Action Center now!',
+                        icon: undefined, // No icon to test if that's the issue
+                        tag: 'persistent-test-' + Date.now(),
+                        requireInteraction: true,
+                        silent: false,
+                        dir: 'ltr',
+                        lang: 'en-US'
+                    });
+
+                    notification.onclick = () => {
+                        notification.close();
+                        this.testResult.textContent = 'Persistent clicked! Notifications work!';
+                        this.testResult.className = 'debug-status success';
+                    };
+
+                    setTimeout(() => {
+                        if (this.testResult.textContent === 'Testing persistent...') {
+                            this.testResult.textContent = 'Persistent active - Look in Action Center!';
+                            this.testResult.className = 'debug-status success';
+                        }
+                    }, 2000);
+
+                    this.safeVibrate([300, 200, 300]);
+
+                } catch (error) {
+                    this.testResult.textContent = 'Persistent Error: ' + error.message;
+                    this.testResult.className = 'debug-status error';
+                }
+            }
+
+            runComprehensiveDiagnostic() {
+                this.diagnosticResults.style.display = 'block';
+                let diagnosticInfo = '';
+
+                // Check browser visibility state
+                diagnosticInfo += `Page Visibility: ${document.visibilityState}<br>`;
+                diagnosticInfo += `Page Hidden: ${document.hidden}<br>`;
+
+                // Check notification permission in detail
+                diagnosticInfo += `Notification Permission: ${Notification.permission}<br>`;
+
+                // Check if page is in background
+                diagnosticInfo += `Window Focused: ${document.hasFocus()}<br>`;
+
+                // Check audio context state
+                diagnosticInfo += `Audio Context State: ${this.audioContext.state}<br>`;
+
+                // Check for potential blockers
+                diagnosticInfo += `User Agent: ${navigator.userAgent.substring(0, 100)}...<br>`;
+
+                // Check if we're in an iframe
+                diagnosticInfo += `In IFrame: ${window.self !== window.top}<br>`;
+
+                // Check platform
+                diagnosticInfo += `Platform: ${navigator.platform}<br>`;
+
+                // Check service worker support
+                diagnosticInfo += `Service Worker Support: ${'serviceWorker' in navigator}<br>`;
+
+                this.diagnosticInfo.innerHTML = diagnosticInfo;
+
+                // Try a very basic notification as final test
+                try {
+                    const basicNotification = new Notification('DIAGNOSTIC TEST', {
+                        body: 'If you see this, notifications work. If not, check Windows settings.',
+                        tag: 'diagnostic-' + Date.now(),
+                        requireInteraction: false
+                    });
+
+                    setTimeout(() => basicNotification.close(), 8000);
+                    diagnosticInfo += `<br><strong>Basic notification sent successfully</strong>`;
+                    this.diagnosticInfo.innerHTML = diagnosticInfo;
+                } catch (error) {
+                    diagnosticInfo += `<br><strong>Basic notification failed: ${error.message}</strong>`;
+                    this.diagnosticInfo.innerHTML = diagnosticInfo;
+                }
+            }
+
+            sendBrowserNotification(title, body, icon = '🍅') {
+                if (this.notificationsEnabled && 'Notification' in window) {
+                    try {
+                        // Update page title to grab attention
+                        this.updatePageTitle('⏰ ' + title);
+
+                        // Create persistent notification without emoji in SVG
+                        const notification = new Notification(title, {
+                            body: body,
+                            icon: 'data:image/svg+xml;base64,' + btoa(`
+                                <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="64" cy="64" r="60" fill="#ff6b6b"/>
+                                    <circle cx="50" cy="55" r="8" fill="white"/>
+                                    <circle cx="78" cy="55" r="8" fill="white"/>
+                                    <path d="M 45 75 Q 64 85 83 75" stroke="white" stroke-width="4" fill="none"/>
+                                </svg>
+                            `),
+                            badge: 'data:image/svg+xml;base64,' + btoa(`
+                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="20" fill="#ff6b6b"/>
+                                    <circle cx="18" cy="20" r="3" fill="white"/>
+                                    <circle cx="30" cy="20" r="3" fill="white"/>
+                                    <path d="M 16 28 Q 24 32 32 28" stroke="white" stroke-width="2" fill="none"/>
+                                </svg>
+                            `),
+                            tag: 'tomato-timer-' + Date.now(), // Unique tag to ensure multiple notifications
+                            renotify: true,
+                            requireInteraction: true, // Keep notification until user dismisses
+                            silent: false
+                        });
+
+                        // Add click handler to focus the window
+                        notification.onclick = () => {
+                            window.focus();
+                            notification.close();
+                            this.resetPageTitle();
+                            this.userInteracted = true; // Mark user interaction when they click notification
+                        };
+
+                        // Enhanced vibration pattern
+                        this.safeVibrate([300, 150, 300, 150, 300]);
+
+                        // Send additional notifications after delays if user hasn't responded
+                        this.notificationReminders = 0;
+                        this.notificationInterval = setInterval(() => {
+                            if (this.notificationReminders < 2) { // Max 2 reminders
+                                this.playSound('focus');
+
+                                // Briefly flash the title
+                                const originalTitle = document.title;
+                                document.title = '⏰⏰⏰ ' + title.toUpperCase() + ' ⏰⏰⏰';
+                                setTimeout(() => {
+                                    document.title = originalTitle;
+                                }, 2000);
+
+                                this.safeVibrate([200, 100, 200]);
+
+                                this.notificationReminders++;
+                            } else {
+                                clearInterval(this.notificationInterval);
+                            }
+                        }, 30000); // Every 30 seconds
+
+                        // Auto-stop reminders after 2 minutes
+                        setTimeout(() => {
+                            clearInterval(this.notificationInterval);
+                        }, 120000);
+
+                    } catch (error) {
+                        console.error('Error sending notification:', error);
+                        // Fallback to just title update and sound
+                        this.updatePageTitle('⏰ ' + title);
+                        this.playSound('focus');
+                    }
+                }
+            }
+
+            updatePageTitle(newTitle) {
+                this.originalTitle = this.originalTitle || document.title;
+                document.title = newTitle;
+
+                // Flash the title
+                let flashCount = 0;
+                this.titleFlashInterval = setInterval(() => {
+                    document.title = flashCount % 2 === 0 ? newTitle : this.originalTitle;
+                    flashCount++;
+
+                    if (flashCount >= 6) { // Flash for 3 seconds
+                        document.title = newTitle;
+                        clearInterval(this.titleFlashInterval);
+                    }
+                }, 500);
+            }
+
+            resetPageTitle() {
+                clearInterval(this.titleFlashInterval);
+                clearInterval(this.notificationInterval);
+                document.title = this.originalTitle || '🍅 Tomato Timer';
+            }
+
+            playSound(type = 'focus') {
+                const now = this.audioContext.currentTime;
+
+                if (type === 'focus') {
+                    // Play a gentle, ascending chime for focus completion
+                    this.playChime(523.25, now, 0.3, 'sine'); // C5
+                    this.playChime(659.25, now + 0.15, 0.25, 'sine'); // E5
+                    this.playChime(783.99, now + 0.3, 0.2, 'sine'); // G5
+                    this.playChime(1046.50, now + 0.45, 0.15, 'sine'); // C6
+
+                    // Add a subtle bass note
+                    this.playChime(261.63, now, 0.15, 'triangle'); // C4
+                } else if (type === 'break') {
+                    // Play a more relaxing, descending chime for break start
+                    this.playChime(783.99, now, 0.25, 'sine'); // G5
+                    this.playChime(659.25, now + 0.15, 0.2, 'sine'); // E5
+                    this.playChime(523.25, now + 0.3, 0.15, 'sine'); // C5
+                    this.playChime(392.00, now + 0.45, 0.1, 'sine'); // G4
+
+                    // Add warmth with a lower note
+                    this.playChime(196.00, now, 0.1, 'triangle'); // G3
+                } else if (type === 'resume') {
+                    // Play a short, encouraging chime for resume
+                    this.playChime(440.00, now, 0.2, 'sine'); // A4
+                    this.playChime(554.37, now + 0.1, 0.15, 'sine'); // C#5
+                }
+            }
+
+            playChime(frequency, startTime, volume, waveType = 'sine') {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = waveType;
+
+                // Smooth attack and release
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.8);
+            }
+
+            showNotification() {
+                this.notification.classList.add('show');
+                setTimeout(() => {
+                    this.notification.classList.remove('show');
+                }, 5000);
+            }
+
+            updateIntervalLabel() {
+                const minutes = Math.floor(this.totalTime / 60);
+                // No longer needed since we have the input field
+                // Kept for compatibility but doesn't update UI
+            }
+
+            validateFocusDurationInput() {
+                const value = parseInt(this.focusDurationInput.value);
+                if (value < 1) {
+                    this.focusDurationInput.value = 1;
+                } else if (value > 120) {
+                    this.focusDurationInput.value = 120;
+                }
+            }
+
+            updateFocusDuration() {
+                const newDuration = parseInt(this.focusDurationInput.value);
+                if (newDuration >= 1 && newDuration <= 120) {
+                    this.notificationInterval = newDuration;
+
+                    // Only update timer if it's not currently running
+                    if (!this.isRunning) {
+                        this.timeLeft = newDuration * 60;
+                        this.totalTime = this.timeLeft;
+                        this.updateDisplay();
+                    }
+
+                    this.updateIntervalLabel();
+                }
+            }
+
+            resetFocusDuration() {
+                this.focusDurationInput.value = 20;
+                this.notificationInterval = 20;
+
+                if (!this.isRunning) {
+                    this.timeLeft = 20 * 60;
+                    this.totalTime = this.timeLeft;
+                    this.updateDisplay();
+                }
+
+                this.updateIntervalLabel();
+
+                // Visual feedback
+                this.resetDurationBtn.style.background = 'linear-gradient(135deg, #48c774, #3ec46d)';
+                setTimeout(() => {
+                    this.resetDurationBtn.style.background = '';
+                }, 1000);
+            }
+
+            toggleAutoMode() {
+                this.autoMode = !this.autoMode;
+                this.autoModeToggle.classList.toggle('active');
+            }
+
+            openBreakSettings() {
+                this.breakMinutesInput.value = this.breakDuration;
+                this.popupOverlay.classList.add('show');
+            }
+
+            closeBreakSettings() {
+                this.popupOverlay.classList.remove('show');
+            }
+
+            saveBreakSettings() {
+                const newBreakDuration = parseInt(this.breakMinutesInput.value);
+                if (newBreakDuration >= 1 && newBreakDuration <= 30) {
+                    this.breakDuration = newBreakDuration;
+                    this.breakSettingsBtn.textContent = `Break: ${this.breakDuration}m`;
+                    this.closeBreakSettings();
+                }
+            }
+
+            
+            pause() {
+                if (this.isRunning && !this.isPaused) {
+                    this.isPaused = true;
+                    clearInterval(this.interval);
+                    this.pauseBtn.textContent = 'Resume';
+                    this.statusText.textContent = 'Paused';
+                } else if (this.isPaused) {
+                    this.isPaused = false;
+                    this.pauseBtn.textContent = 'Pause';
+                    this.statusText.textContent = this.isBreakTime ? 'Break time! ☕' : 'Focus time! 🍅';
+                    this.playSound('resume');
+                    this.interval = setInterval(() => this.tick(), 1000);
+                }
+            }
+
+            reset() {
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.isPaused = false;
+                this.timeLeft = this.totalTime;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.pauseBtn.textContent = 'Pause';
+                this.statusText.textContent = 'Ready to focus';
+
+                // Remove urgency mode and reset notifications
+                document.querySelector('.container').classList.remove('urgency-mode');
+                this.resetPageTitle();
+
+                this.updateDisplay();
+            }
+
+            setManualTime() {
+                const minutes = parseInt(this.manualMinutes.value) || 0;
+                const seconds = parseInt(this.manualSeconds.value) || 0;
+
+                if (minutes >= 0 && minutes < 60 && seconds >= 0 && seconds < 60) {
+                    this.timeLeft = minutes * 60 + seconds;
+                    this.totalTime = this.timeLeft;
+                    this.isBreakTime = false;
+                    this.reset();
+                    this.updateIntervalLabel();
+                    this.manualMinutes.value = '';
+                    this.manualSeconds.value = '';
+                }
+            }
+
+            start() {
+                // Clear any ongoing notifications when starting
+                this.resetPageTitle();
+                document.querySelector('.container').classList.remove('urgency-mode');
+
+                if (!this.isRunning) {
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startBtn.disabled = true;
+                    this.pauseBtn.disabled = false;
+                    this.statusText.textContent = this.isBreakTime ? 'Break time! ☕' : 'Focus time! 🍅';
+
+                    this.interval = setInterval(() => this.tick(), 1000);
+                }
+            }
+
+            tick() {
+                this.timeLeft--;
+                this.updateDisplay();
+
+                if (this.timeLeft <= 0) {
+                    // Add visual urgency
+                    document.querySelector('.container').classList.add('urgency-mode');
+
+                    if (this.autoMode) {
+                        if (!this.isBreakTime) {
+                            // Focus session completed - start break
+                            this.playSound('focus');
+                            this.sendBrowserNotification(
+                                '☕ Break Time!',
+                                `Great job! You completed a ${Math.floor(this.totalTime / 60)}-minute focus session. Time for a ${this.breakDuration}-minute break!`,
+                                '☕'
+                            );
+                            this.showNotification();
+                            this.notification.innerHTML = '<strong>☕ Break time!</strong><br>Focus session completed! 🎉';
+                            this.startBreak();
+                        } else {
+                            // Break completed - start focus session
+                            this.playSound('break');
+                            this.sendBrowserNotification(
+                                '🍅 Focus Time!',
+                                `Break time is over! Ready for another ${this.notificationInterval}-minute focus session?`,
+                                '🍅'
+                            );
+                            this.showNotification();
+                            this.notification.innerHTML = '<strong>🍅 Focus time!</strong><br>Break completed! Ready to focus? 💪';
+                            this.startFocusSession();
+                        }
+                    } else {
+                        // Manual mode - just notify and reset
+                        this.playSound('focus');
+                        this.sendBrowserNotification(
+                            '⏰ Timer Completed!',
+                            `Your ${Math.floor(this.totalTime / 60)}-minute timer is complete! Click to start a new session or set a custom time.`,
+                            '⏰'
+                        );
+                        this.showNotification();
+                        this.reset();
+                    }
+                }
+            }
+
+            startBreak() {
+                clearInterval(this.interval);
+                this.isBreakTime = true;
+                this.timeLeft = this.breakDuration * 60;
+                this.totalTime = this.timeLeft;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.pauseBtn.textContent = 'Pause';
+                this.statusText.textContent = 'Break time! ☕';
+                this.updateDisplay();
+                this.updateIntervalLabel();
+
+                // Change progress bar color for break
+                const gradient = document.querySelector('#gradient');
+                gradient.innerHTML = `
+                    <stop offset="0%" style="stop-color:#00d2d3;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#01a3a4;stop-opacity:1" />
+                `;
+
+                // Remove urgency mode
+                document.querySelector('.container').classList.remove('urgency-mode');
+            }
+
+            startFocusSession() {
+                clearInterval(this.interval);
+                this.isBreakTime = false;
+                this.timeLeft = this.notificationInterval * 60;
+                this.totalTime = this.timeLeft;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.pauseBtn.textContent = 'Pause';
+                this.statusText.textContent = 'Ready to focus';
+                this.updateDisplay();
+                this.updateIntervalLabel();
+
+                // Reset progress bar color for focus
+                const gradient = document.querySelector('#gradient');
+                gradient.innerHTML = `
+                    <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ee5a24;stop-opacity:1" />
+                `;
+
+                // Remove urgency mode
+                document.querySelector('.container').classList.remove('urgency-mode');
+            }
+
+            updateDisplay() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                this.timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                const progress = (this.totalTime - this.timeLeft) / this.totalTime;
+                const circumference = 2 * Math.PI * 90;
+                const offset = circumference - (progress * circumference);
+                this.progressBar.style.strokeDashoffset = offset;
+            }
+        }
+
+        // Initialize the timer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new TomatoTimer();
+        });
+    </script>
+</body>
+</html>
