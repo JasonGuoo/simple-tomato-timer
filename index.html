@@ -406,39 +406,43 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            font-size: 1.2em;
+            font-size: 0.9em;
             color: white;
+            opacity: 0.7;
         }
 
         .debug-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            opacity: 1;
         }
 
         .debug-toggle.active {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.8), rgba(238, 90, 36, 0.8));
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+            opacity: 0.9;
         }
 
         .debug-toggle.active:hover {
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            opacity: 1;
         }
 
         .notification-debug {
             position: fixed;
-            bottom: 80px;
+            bottom: 60px;
             right: 20px;
             background: white;
             border: 2px solid #e0e0e0;
@@ -805,6 +809,64 @@
                 this.notificationsEnabled = false;
                 this.userInteracted = false;
 
+                // Cute sassy messages for focus completion
+                this.focusCompletionMessages = [
+                    "🔥 DAMN, you're on fire! Now go shake that booty before it falls asleep!",
+                    "😏 Look at you being all productive... now scurry off and do a silly little dance!",
+                    "💅 Your brain needs a time-out, sweetie. Go wiggle it like you just don't care!",
+                    "👀 Your eyes are giving me the stink eye... give 'em a break before they start a rebellion!",
+                    "🍑 Your booty called - it wants to stand up and shake what your mama gave ya!",
+                    "😴 Psst... your body is plotting against you if you don't move soon! Better listen!",
+                    "🕺 Time for your mandatory 3-minute dance break! I'm watching... 👁️",
+                    "🤸‍♀️ Your spine just filed a complaint. Go stretch it or it's going on strike!",
+                    "💃 Okay, superstar! Your focus game is strong, but your glutes are getting sleepy!",
+                    "🎭 The productivity police says you've been too good. Go be a little lazy for 3 minutes!",
+                    "🐱 Your inner cat needs to stretch like you just woke up from a nap... do it!",
+                    "🎪 Time to join the circus of silly stretches! Show me your best weird move!",
+                    "🌮 Your brain taco is fully loaded. Now go digest it with some happy wiggles!",
+                    "🦸‍♀️ You just saved the productivity world! Now go accept your reward: a booty shake!",
+                    "🎪 Clown mode activated! Go make a funny face in the mirror, you know you want to!",
+                    "🍭 You've been such a good human! Have a candy... I mean, a stretch break!",
+                    "🐒 Time to unleash your inner monkey! Go climb something... safely, you weirdo!",
+                    "👻 Your ghost energy is building up. Exorcise it with a spooky little dance!",
+                    "🎀 All wrapped up in work? Time to unravel with some delicious movement!",
+                    "🍯 You sweet little worker bee! Time to buzz away from the screen and smell the... well, not flowers, but move around!",
+                    "🌶️ SPICY focus session! Now cool down with some sassy stretches!",
+                    "🎲 Roll the dice of randomness! Go do something weird for 3 minutes!",
+                    "🦜 Pretty bird! Pretty bird! Now fly away from that screen and stretch your wings!",
+                    "🪩 You've been glowing so bright! Time to dim the lights and disco-break!",
+                    "🍇 Bunch of focus grapes! Now go stomp them into wine with your feet! (Metaphorically... probably)"
+                ];
+
+                // Sassy break completion messages
+                this.breakCompletionMessages = [
+                    "😘 Well hello gorgeous! Ready to be brilliant again? Your brain missed the spotlight!",
+                    "🎯 Alright, hotshot! Your break was cute and all, but greatness awaits!",
+                    "🦊 Foxy, you've had your fun! Time to come back and make magic happen!",
+                    "🚀 Break time's over, buttercup! Let's go make some more awesomeness!",
+                    "💅 Okay, diva! You've rested enough, the world needs your fabulous focus again!",
+                    "🎭 The curtain's rising on your next act! Ready to be the star again?",
+                    "🍯 Sweetie pie! Your sugar rush is calling... time to get back to being amazing!",
+                    "🌟 Twinkle twinkle little star, time to show 'em what you really are!",
+                    "🎪 Back to the circus of productivity! Your audience awaits, superstar!",
+                    "🔥 The fire's still burning! Let's go set the world ablaze with your genius!",
+                    "👑 King/Queen of the castle! Your throne of productivity awaits!",
+                    "🎈 Okay, party animal! Fun time's over, back to being unstoppable!",
+                    "🌺 Alright beautiful flower! Time to bloom again with your awesome skills!",
+                    "🦋 You've had your flutter! Now transform back into that focus butterfly!",
+                    "🎮 Level complete! Ready for the next boss battle of productivity?",
+                    "🪄 Abracadabra! You're rested and ready to make more magic happen!",
+                    "🌈 All colors of the rainbow restored! Time to paint your next masterpiece!",
+                    "🎵 The intermission is over! Time for act two of your incredible performance!",
+                    "🍕 Okay, you delicious pizza! All toppings are ready... time to get served!",
+                    "🎬 Cut! That's a wrap on break time. Ready for your next scene?",
+                    "🦊 Sly fox! You've had your sneaky rest... now go be brilliant!",
+                    "🎀 Unwrapped and refreshed! Ready to be the gift that keeps on giving!",
+                    "🎲 Lady luck's on your side! Ready to roll the dice of productivity again?",
+                    "🌶️ Spicy break done! Time to bring that heat back to your work!",
+                    "🎪 Ringmaster! The circus needs you back! Ready to tame those tasks?"
+                ];
+
                 this.initElements();
                 this.bindEvents();
                 this.createAudioContext();
@@ -933,11 +995,7 @@
                                     this.permissionIndicator.style.display = 'none';
                                 }, 300);
                             }, 2000);
-                            // Send a test notification to confirm it works
-                            setTimeout(() => {
-                                this.sendTestNotification();
-                                this.updateDebugInfo();
-                            }, 500);
+                            this.updateDebugInfo();
                             return;
                         }
 
@@ -954,11 +1012,7 @@
                         if (this.notificationsEnabled) {
                             this.permissionText.textContent = 'Notifications enabled! 🔔';
                             this.permissionIndicator.classList.remove('error');
-                            // Send a test notification to confirm it works
-                            setTimeout(() => {
-                                this.sendTestNotification();
-                                this.updateDebugInfo();
-                            }, 500);
+                            this.updateDebugInfo();
                             setTimeout(() => {
                                 this.permissionIndicator.classList.add('hide');
                                 setTimeout(() => {
@@ -1031,6 +1085,10 @@
 
                     this.safeVibrate([100]);
                 }
+            }
+
+            getRandomMessage(messageArray) {
+                return messageArray[Math.floor(Math.random() * messageArray.length)];
             }
 
             initNotificationDebug() {
@@ -1661,33 +1719,36 @@
                         if (!this.isBreakTime) {
                             // Focus session completed - start break
                             this.playSound('focus');
+                            const randomFocusMessage = this.getRandomMessage(this.focusCompletionMessages);
                             this.sendBrowserNotification(
-                                '☕ Break Time!',
-                                `Great job! You completed a ${Math.floor(this.totalTime / 60)}-minute focus session. Time for a ${this.breakDuration}-minute break!`,
-                                '☕'
+                                '😏 BOOTY ALERT!',
+                                randomFocusMessage,
+                                '🍑'
                             );
                             this.showNotification();
-                            this.notification.innerHTML = '<strong>☕ Break time!</strong><br>Focus session completed! 🎉';
+                            this.notification.innerHTML = `<strong>😏 BOOTY ALERT!</strong><br>${randomFocusMessage}`;
                             this.startBreak();
                         } else {
                             // Break completed - start focus session
                             this.playSound('break');
+                            const randomBreakMessage = this.getRandomMessage(this.breakCompletionMessages);
                             this.sendBrowserNotification(
-                                '🍅 Focus Time!',
-                                `Break time is over! Ready for another ${this.notificationInterval}-minute focus session?`,
-                                '🍅'
+                                '🔥 GORGEOUS ALERT!',
+                                randomBreakMessage,
+                                '🌟'
                             );
                             this.showNotification();
-                            this.notification.innerHTML = '<strong>🍅 Focus time!</strong><br>Break completed! Ready to focus? 💪';
+                            this.notification.innerHTML = `<strong>🔥 GORGEOUS ALERT!</strong><br>${randomBreakMessage}`;
                             this.startFocusSession();
                         }
                     } else {
                         // Manual mode - just notify and reset
                         this.playSound('focus');
+                        const randomFocusMessage = this.getRandomMessage(this.focusCompletionMessages);
                         this.sendBrowserNotification(
-                            '⏰ Timer Completed!',
-                            `Your ${Math.floor(this.totalTime / 60)}-minute timer is complete! Click to start a new session or set a custom time.`,
-                            '⏰'
+                            '💅 FABULOUS ALERT!',
+                            randomFocusMessage,
+                            '💅'
                         );
                         this.showNotification();
                         this.reset();
