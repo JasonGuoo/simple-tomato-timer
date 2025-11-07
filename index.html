@@ -1423,6 +1423,9 @@
                     this.autoModeToggle.classList.add('active');
                 }
 
+                // Ensure notificationInterval is synced with config focusDuration
+                this.notificationInterval = this.config.focusDuration;
+
                 if (this.leafBtn && this.config.autoMode) {
                     this.leafBtn.classList.add('active');
                 }
@@ -2178,6 +2181,8 @@
                 const newDuration = parseInt(this.focusDurationInput.value);
                 if (newDuration >= 1 && newDuration <= 120) {
                     this.notificationInterval = newDuration;
+                    // Also update the configuration to keep them in sync
+                    this.config.focusDuration = newDuration;
 
                     // Only update timer if it's not currently running
                     if (!this.isRunning) {
@@ -2197,6 +2202,8 @@
             resetFocusDuration() {
                 this.focusDurationInput.value = 20;
                 this.notificationInterval = 20;
+                // Also update the configuration
+                this.config.focusDuration = 20;
 
                 if (!this.isRunning) {
                     this.timeLeft = 20 * 60;
@@ -2231,10 +2238,12 @@
                 this.reset();
                 this.clearAllActiveStates();
 
-                // Set timer to specified minutes
+                // Set timer to specified minutes (temporary, don't update configuration)
                 this.timeLeft = minutes * 60;
                 this.totalTime = this.timeLeft;
                 this.isBreakTime = false;
+
+                // IMPORTANT: Don't update notificationInterval or config values for temporary timers
 
                 // Set active state on the clicked button
                 if (buttonElement) {
@@ -2341,8 +2350,11 @@
                     btn.classList.remove('active');
                 });
 
-                // Set timer to focus duration from configuration (not from previous timer)
-                this.timeLeft = this.notificationInterval * 60;
+                // Set timer to focus duration from configuration (always use config value, not notificationInterval)
+                let focusDuration = this.config.focusDuration || 20; // fallback to 20 minutes
+                // Ensure focusDuration is within reasonable bounds (1-120 minutes)
+                focusDuration = Math.max(1, Math.min(120, focusDuration));
+                this.timeLeft = focusDuration * 60;
                 this.totalTime = this.timeLeft;
 
                 // Ensure auto button stays active
@@ -2554,7 +2566,11 @@
             startFocusSession() {
                 clearInterval(this.interval);
                 this.isBreakTime = false;
-                this.timeLeft = this.notificationInterval * 60;
+                // Always use configuration value for consistency
+                let focusDuration = this.config.focusDuration || 20; // fallback to 20 minutes
+                // Ensure focusDuration is within reasonable bounds (1-120 minutes)
+                focusDuration = Math.max(1, Math.min(120, focusDuration));
+                this.timeLeft = focusDuration * 60;
                 this.totalTime = this.timeLeft;
 
                 if (this.autoMode) {
