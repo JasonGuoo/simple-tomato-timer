@@ -402,9 +402,43 @@
             line-height: 1.4;
         }
 
-        .notification-debug {
+        .debug-toggle {
             position: fixed;
             bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .debug-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .debug-toggle.active {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .debug-toggle.active:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .notification-debug {
+            position: fixed;
+            bottom: 80px;
             right: 20px;
             background: white;
             border: 2px solid #e0e0e0;
@@ -694,6 +728,10 @@
         <span id="permissionText">Requesting notification permission...</span>
     </div>
 
+    <button class="debug-toggle" id="debugToggleBtn" title="Toggle Debug Panel">
+        🔍
+    </button>
+
     <div class="notification-debug" id="notificationDebug">
         <div class="debug-header">
             <span>🔍 Notification Debug</span>
@@ -798,6 +836,7 @@
                 this.popupCancelBtn = document.getElementById('popupCancelBtn');
                 this.permissionIndicator = document.getElementById('permissionIndicator');
                 this.permissionText = document.getElementById('permissionText');
+                this.debugToggleBtn = document.getElementById('debugToggleBtn');
                 this.notificationDebug = document.getElementById('notificationDebug');
                 this.closeDebugBtn = document.getElementById('closeDebugBtn');
                 this.testNotificationBtn = document.getElementById('testNotificationBtn');
@@ -836,6 +875,7 @@
                 this.focusDurationInput.addEventListener('change', () => this.updateFocusDuration());
                 this.focusDurationInput.addEventListener('input', () => this.validateFocusDurationInput());
                 this.resetDurationBtn.addEventListener('click', () => this.resetFocusDuration());
+                this.debugToggleBtn.addEventListener('click', () => this.toggleDebugPanel());
                 this.closeDebugBtn.addEventListener('click', () => this.closeDebugPanel());
                 this.testNotificationBtn.addEventListener('click', () => this.testSystemNotification());
                 this.testSimpleBtn.addEventListener('click', () => this.testSimpleNotification());
@@ -994,16 +1034,25 @@
             }
 
             initNotificationDebug() {
-                // Show debug panel if notifications might have issues
-                setTimeout(() => {
-                    this.showDebugPanel();
-                }, 3000);
-
+                // Debug panel is now off by default - user must click the toggle icon to show it
                 this.updateDebugInfo();
+            }
+
+            toggleDebugPanel() {
+                const isVisible = this.notificationDebug.classList.contains('show');
+
+                if (isVisible) {
+                    this.closeDebugPanel();
+                } else {
+                    this.showDebugPanel();
+                }
             }
 
             showDebugPanel() {
                 this.notificationDebug.classList.add('show');
+                this.debugToggleBtn.classList.add('active');
+                this.debugToggleBtn.innerHTML = '✖';
+                this.debugToggleBtn.title = 'Hide Debug Panel';
                 // Auto-run diagnostic after a short delay
                 setTimeout(() => {
                     this.runComprehensiveDiagnostic();
@@ -1012,6 +1061,9 @@
 
             closeDebugPanel() {
                 this.notificationDebug.classList.remove('show');
+                this.debugToggleBtn.classList.remove('active');
+                this.debugToggleBtn.innerHTML = '🔍';
+                this.debugToggleBtn.title = 'Show Debug Panel';
             }
 
             updateDebugInfo() {
