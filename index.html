@@ -1010,6 +1010,20 @@
 
         /* iPhone Safari Fixes */
         @supports (-webkit-touch-callout: none) {
+            /* Additional fix for very small screens */
+            @media (max-height: 700px) {
+                .timer-text {
+                    font-size: 2.4em;
+                }
+                .timer-circle {
+                    width: 160px;
+                    height: 160px;
+                }
+                .timer-svg {
+                    width: 160px;
+                    height: 160px;
+                }
+            }
             /* iPhone specific styles */
             body {
                 -webkit-text-size-adjust: 100%;
@@ -1019,10 +1033,30 @@
             .container {
                 padding: 20px 15px;
                 margin: 10px;
+                max-height: 95vh;
+                overflow-y: auto;
             }
 
+            .timer-circle {
+                width: 180px;
+                height: 180px;
+                margin: 0 auto 15px;
+            }
+
+            .timer-svg {
+                width: 180px;
+                height: 180px;
+            }
+
+            
             .timer-text {
-                font-size: 3em;
+                font-size: 2.8em;
+                line-height: 1;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+                word-break: break-all;
+                overflow-wrap: break-word;
             }
 
             .controls {
@@ -1481,7 +1515,17 @@
                 this.settingsPanel = document.getElementById('settingsPanel');
                 this.breakDurationInput = document.getElementById('breakDurationInput');
 
-                const circumference = 2 * Math.PI * 90;
+                // Determine the correct radius based on device and screen size
+                let radius = 90; // default radius
+                if (window.CSS && CSS.supports('-webkit-touch-callout', 'none')) {
+                    // iPhone: determine radius based on screen height
+                    if (window.innerHeight <= 700) {
+                        radius = 72; // for very small iPhones (matches 160px circle)
+                    } else {
+                        radius = 81; // for regular iPhones (matches 180px circle)
+                    }
+                }
+                const circumference = 2 * Math.PI * radius;
                 this.progressBar.style.strokeDasharray = circumference;
                 this.progressBar.style.strokeDashoffset = circumference;
             }
@@ -2614,7 +2658,17 @@
                 this.timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
                 const progress = (this.totalTime - this.timeLeft) / this.totalTime;
-                const circumference = 2 * Math.PI * 90;
+                // Use the same radius calculation as in initialization
+                let radius = 90; // default radius
+                if (window.CSS && CSS.supports('-webkit-touch-callout', 'none')) {
+                    // iPhone: determine radius based on screen height
+                    if (window.innerHeight <= 700) {
+                        radius = 72; // for very small iPhones (matches 160px circle)
+                    } else {
+                        radius = 81; // for regular iPhones (matches 180px circle)
+                    }
+                }
+                const circumference = 2 * Math.PI * radius;
                 const offset = circumference - (progress * circumference);
                 this.progressBar.style.strokeDashoffset = offset;
 
