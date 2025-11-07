@@ -2,8 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <!-- iOS Safari PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tomato Timer">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#ff6b6b">
+
+    <!-- Prevent Chrome from showing the address bar on mobile -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons for various devices -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
     <title>🍅 Tomato Timer</title>
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Prevent bounce scrolling on iOS
+        document.addEventListener('touchmove', function(event) {
+            if (event.scale !== 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // Add safe area support for iOS
+        if (window.navigator.standalone) {
+            document.body.classList.add('standalone');
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -963,6 +1007,119 @@
                 font-size: 0.9em;
             }
         }
+
+        /* iPhone Safari Fixes */
+        @supports (-webkit-touch-callout: none) {
+            /* iPhone specific styles */
+            body {
+                -webkit-text-size-adjust: 100%;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .container {
+                padding: 20px 15px;
+                margin: 10px;
+            }
+
+            .timer-text {
+                font-size: 3em;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+
+            .tomato-buttons {
+                gap: 10px;
+                margin: 20px 0;
+            }
+
+            .tomato-btn, .leaf-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 10px;
+            }
+
+            .leaf-btn {
+                width: 50px;
+                font-size: 9px;
+            }
+
+            /* Settings panel for iPhone */
+            .settings-panel, .readme-panel {
+                max-width: 320px;
+                max-height: 70vh;
+                bottom: 70px;
+                left: 10px;
+                right: 10px;
+            }
+
+            /* Buttons positioned for iPhone */
+            .settings-btn {
+                bottom: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .readme-btn {
+                bottom: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .debug-toggle {
+                top: 15px;
+                right: 15px;
+                width: 28px;
+                height: 28px;
+            }
+
+            /* Fix for iPhone notch and safe area */
+            @media screen and (max-width: 414px) {
+                body {
+                    padding-top: env(safe-area-inset-top);
+                    padding-bottom: env(safe-area-inset-bottom);
+                }
+
+                .settings-panel, .readme-panel {
+                    bottom: calc(70px + env(safe-area-inset-bottom));
+                }
+
+                .settings-btn, .readme-btn {
+                    bottom: calc(15px + env(safe-area-inset-bottom));
+                }
+            }
+
+            /* Disable zoom on input focus for iPhone */
+            input {
+                font-size: 16px !important;
+            }
+
+            /* Standalone mode (home screen) adjustments */
+            body.standalone {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+
+            body.standalone .container {
+                height: 100vh;
+                height: -webkit-fill-available;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                max-height: 100vh;
+                max-height: -webkit-fill-available;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1344,7 +1501,21 @@
                 this.runDiagnosticBtn.addEventListener('click', () => this.runComprehensiveDiagnostic());
 
                 // Settings panel toggle
-                this.settingsBtn.addEventListener('click', () => this.toggleSettingsPanel());
+                this.settingsBtn.addEventListener('click', (e) => this.toggleSettingsPanel(e));
+
+                // Close settings panel when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (this.settingsPanel.classList.contains('show') &&
+                        !this.settingsPanel.contains(e.target) &&
+                        !this.settingsBtn.contains(e.target)) {
+                        this.settingsPanel.classList.remove('show');
+                    }
+                });
+
+                // Prevent settings panel click from bubbling to document
+                this.settingsPanel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
 
                 // Tomato buttons
                 this.tomatoButtons.forEach(btn => {
@@ -2013,6 +2184,9 @@
                         this.timeLeft = newDuration * 60;
                         this.totalTime = this.timeLeft;
                         this.updateDisplay();
+                    } else if (this.autoMode && this.isRunning) {
+                        // If auto mode is running, restart it to apply new focus duration immediately
+                        this.startAutoModeFocus();
                     }
 
                     this.updateIntervalLabel();
@@ -2028,6 +2202,9 @@
                     this.timeLeft = 20 * 60;
                     this.totalTime = this.timeLeft;
                     this.updateDisplay();
+                } else if (this.autoMode && this.isRunning) {
+                    // If auto mode is running, restart it with default duration
+                    this.startAutoModeFocus();
                 }
 
                 this.updateIntervalLabel();
@@ -2084,13 +2261,22 @@
                 this.activeButton = null;
             }
 
-            toggleSettingsPanel() {
+            toggleSettingsPanel(event) {
                 const isVisible = this.settingsPanel.classList.contains('show');
 
                 if (isVisible) {
                     this.settingsPanel.classList.remove('show');
                 } else {
                     this.settingsPanel.classList.add('show');
+                    // Close Read Me panel if open
+                    if (this.readmePanel && this.readmePanel.classList.contains('show')) {
+                        this.readmePanel.classList.remove('show');
+                    }
+                }
+
+                // Prevent event from bubbling to document click handler
+                if (event) {
+                    event.stopPropagation();
                 }
             }
 
@@ -2099,6 +2285,11 @@
                 if (newDuration >= 1 && newDuration <= 30) {
                     this.breakDuration = newDuration;
                     this.saveConfiguration();
+
+                    // If auto mode is running, restart it to apply new break duration immediately
+                    if (this.autoMode && this.isRunning) {
+                        this.startAutoModeFocus();
+                    }
                 }
             }
 
@@ -2121,15 +2312,36 @@
                     // Save configuration
                     this.saveConfiguration();
                 } else {
-                    // Stop auto mode
-                    this.stopAutoMode();
+                    // Auto mode already running - restart with new configs
+                    // Save current configuration first
+                    this.saveConfiguration();
+
+                    // Restart auto mode with new settings (no state change)
+                    this.startAutoModeFocus();
                 }
             }
 
             startAutoModeFocus() {
-                // Reset and start with focus session (but don't clear auto button state)
-                this.resetWithoutClearingAuto();
+                // Reset timer state but keep configuration values
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.isPaused = false;
                 this.isBreakTime = false;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.pauseBtn.textContent = 'Pause';
+                this.statusText.textContent = 'Ready to focus';
+
+                // Remove urgency mode and reset notifications
+                document.querySelector('.container').classList.remove('urgency-mode');
+                this.resetPageTitle();
+
+                // Clear tomato button active states but preserve auto button if it's active
+                this.tomatoButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Set timer to focus duration from configuration (not from previous timer)
                 this.timeLeft = this.notificationInterval * 60;
                 this.totalTime = this.timeLeft;
 
@@ -2182,12 +2394,16 @@
                     clearInterval(this.interval);
                     this.pauseBtn.textContent = 'Resume';
                     this.statusText.textContent = 'Paused';
+                    // Update title to show paused state
+                    this.updatePageTitle();
                 } else if (this.isPaused) {
                     this.isPaused = false;
                     this.pauseBtn.textContent = 'Pause';
                     this.statusText.textContent = this.isBreakTime ? 'Break time! ☕' : 'Focus time! 🍅';
                     this.playSound('resume');
                     this.interval = setInterval(() => this.tick(), 1000);
+                    // Update title to show running state
+                    this.updatePageTitle();
                 }
             }
 
@@ -2237,6 +2453,9 @@
                     this.startBtn.disabled = true;
                     this.pauseBtn.disabled = false;
                     this.statusText.textContent = this.isBreakTime ? 'Break time! ☕' : 'Focus time! 🍅';
+
+                    // Update title immediately when starting
+                    this.updatePageTitle();
 
                     this.interval = setInterval(() => this.tick(), 1000);
                 }
@@ -2382,6 +2601,29 @@
                 const circumference = 2 * Math.PI * 90;
                 const offset = circumference - (progress * circumference);
                 this.progressBar.style.strokeDashoffset = offset;
+
+                // Update webpage title
+                this.updatePageTitle();
+            }
+
+            updatePageTitle() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (this.isRunning && !this.isPaused) {
+                    if (this.isBreakTime) {
+                        document.title = `☕ Break: ${timeString} - Tomato Timer`;
+                    } else if (this.autoMode) {
+                        document.title = `🍅 Focus: ${timeString} - Auto Tomato Timer`;
+                    } else {
+                        document.title = `⏰ Timer: ${timeString} - Tomato Timer`;
+                    }
+                } else if (this.isPaused) {
+                    document.title = `⏸️ Paused: ${timeString} - Tomato Timer`;
+                } else {
+                    document.title = '🍅 Tomato Timer - Simple & Clean';
+                }
             }
         }
 
