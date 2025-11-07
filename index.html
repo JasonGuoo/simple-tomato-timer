@@ -404,7 +404,7 @@
 
         .debug-toggle {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
             width: 32px;
             height: 32px;
@@ -442,7 +442,7 @@
 
         .notification-debug {
             position: fixed;
-            bottom: 60px;
+            top: 60px;
             right: 20px;
             background: white;
             border: 2px solid #e0e0e0;
@@ -563,6 +563,317 @@
             margin-top: 20px;
         }
 
+        .config-section {
+            margin-bottom: 20px;
+        }
+
+        .config-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .config-label {
+            color: #555;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tomato-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tomato-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50% 50% 45% 45%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tomato-btn::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 4px;
+            background: #4CAF50;
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .tomato-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #ff5252, #e0410f);
+        }
+
+        .tomato-btn:active {
+            transform: scale(1.05);
+        }
+
+        .tomato-btn.active {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            box-shadow: 0 3px 10px rgba(211, 47, 47, 0.4);
+            animation: tomatoPulse 2s infinite;
+            transform: scale(1.05);
+        }
+
+        @keyframes tomatoPulse {
+            0%, 100% { transform: scale(1.05); box-shadow: 0 3px 10px rgba(211, 47, 47, 0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 6px 20px rgba(211, 47, 47, 0.6); }
+        }
+
+        .leaf-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50% 50% 45% 45%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leaf-btn::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .leaf-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+        }
+
+        .leaf-btn:active {
+            transform: scale(1.05);
+        }
+
+        .leaf-btn.active {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            box-shadow: 0 3px 10px rgba(46, 125, 50, 0.4);
+            animation: tomatoPulse 2s infinite;
+            transform: scale(1.05);
+        }
+
+        .settings-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .settings-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            display: none;
+            min-width: 280px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .settings-panel.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .settings-title {
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .settings-row label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .settings-input {
+            width: 60px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .settings-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .settings-btn-small {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #48c774, #3ec46d);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .settings-btn-small:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(72, 199, 116, 0.3);
+        }
+
+      
+        .advanced-settings {
+            margin-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+            display: none;
+        }
+
+        .advanced-settings.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+                transform: translateY(0);
+            }
+        }
+
+        .advanced-toggle {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .advanced-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(162, 155, 254, 0.3);
+        }
+
         .setting-group {
             display: flex;
             justify-content: space-between;
@@ -590,35 +901,24 @@
             border-color: #667eea;
         }
 
-        .manual-set {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .manual-set input {
-            width: 60px;
-            padding: 8px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 1em;
-        }
-
-        .manual-set button {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #48c774, #3ec46d);
             color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(72, 199, 116, 0.4);
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
         }
 
-        .manual-set button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 210, 211, 0.3);
+        .save-indicator.show {
+            opacity: 1;
         }
 
         .notification-badge {
@@ -698,33 +998,70 @@
                 <button class="btn reset" id="resetBtn">Reset</button>
             </div>
 
-            <section class="settings">
-                <div class="setting-group">
-                    <label>Focus Duration:</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="number" id="focusDurationInput" min="1" max="120" value="20" style="width: 60px; padding: 6px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center;">
-                        <span>minutes</span>
-                        <button class="break-settings-btn" id="resetDurationBtn" title="Reset to default">↺</button>
-                    </div>
-                </div>
+            <!-- Tomato Timer Buttons -->
+            <div class="tomato-buttons">
+                <!-- First Row -->
+                <button class="leaf-btn" id="autoModeStartBtn" title="Start Auto Mode">Auto</button>
+                <button class="tomato-btn" data-minutes="1">1</button>
+                <button class="tomato-btn" data-minutes="3">3</button>
+                <button class="tomato-btn" data-minutes="5">5</button>
 
-                <div class="auto-mode-container">
-                    <label>Auto Mode:</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="toggle-switch" id="autoModeToggle">
-                            <div class="toggle-slider"></div>
-                        </div>
-                        <button class="break-settings-btn" id="breakSettingsBtn">Break: 3m</button>
-                    </div>
-                </div>
-
-                <div class="manual-set">
-                    <input type="number" id="manualMinutes" placeholder="Min" min="0" max="59">
-                    <input type="number" id="manualSeconds" placeholder="Sec" min="0" max="59">
-                    <button id="setManualBtn">Set Time</button>
-                </div>
-            </section>
+                <!-- Second Row -->
+                <button class="tomato-btn" data-minutes="10">10</button>
+                <button class="tomato-btn" data-minutes="15">15</button>
+                <button class="tomato-btn" data-minutes="25">25</button>
+                <button class="tomato-btn" data-minutes="30">30</button>
+            </div>
         </main>
+    </div>
+
+    <!-- Settings Button and Panel -->
+    <button class="settings-btn" id="settingsBtn">⚙️</button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-section">
+            <div class="settings-title">
+                <span>🔄</span>
+                <span>Auto Mode</span>
+            </div>
+            <div class="settings-row">
+                <label>Enable Auto Mode:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="toggle-switch" id="autoModeToggle" style="transform: scale(0.8);">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-row">
+                <label>Break Duration:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="number" id="breakDurationInput" class="settings-input" min="1" max="30" value="3">
+                    <span style="font-size: 0.9em; color: #666;">min</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-title">
+                <span>⏱️</span>
+                <span>Timer Settings</span>
+            </div>
+            <div class="settings-row">
+                <label>Focus Duration:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="number" id="focusDurationInput" class="settings-input" min="1" max="120" value="20">
+                    <span style="font-size: 0.9em; color: #666;">min</span>
+                </div>
+            </div>
+            <div class="settings-row">
+                <label>Custom Timer:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="number" id="manualMinutes" class="settings-input" placeholder="Min" min="0" max="59" style="width: 50px;">
+                    <input type="number" id="manualSeconds" class="settings-input" placeholder="Sec" min="0" max="59" style="width: 50px;">
+                    <button class="settings-btn-small" id="setManualBtn">Set</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="notification-permission" id="permissionIndicator">
@@ -777,23 +1114,11 @@
         Time for a break! 🎉
     </div>
 
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup">
-            <h3>⚙️ Break Duration Settings</h3>
-            <div class="popup-content">
-                <p style="text-align: center; color: #666; margin-bottom: 15px;">Set your break duration</p>
-                <div class="popup-input-group">
-                    <input type="number" class="popup-input" id="breakMinutesInput" min="1" max="30" value="3">
-                    <span style="color: #666;">minutes</span>
-                </div>
-            </div>
-            <div class="popup-buttons">
-                <button class="popup-btn cancel" id="popupCancelBtn">Cancel</button>
-                <button class="popup-btn save" id="popupSaveBtn">Save</button>
-            </div>
-        </div>
+    <div class="save-indicator" id="saveIndicator">
+        ✅ Configuration saved
     </div>
 
+  
     <script>
         class TomatoTimer {
             constructor() {
@@ -808,6 +1133,19 @@
                 this.isBreakTime = false;
                 this.notificationsEnabled = false;
                 this.userInteracted = false;
+
+                // Configuration storage key
+                this.storageKey = 'tomato-timer-config';
+
+                // Default configuration
+                this.defaultConfig = {
+                    focusDuration: 20,
+                    breakDuration: 3,
+                    autoMode: false
+                };
+
+                // Load configuration from storage
+                this.loadConfiguration();
 
                 // Cute sassy messages for focus completion
                 this.focusCompletionMessages = [
@@ -875,6 +1213,72 @@
                 this.requestNotificationPermission();
                 this.updateDisplay();
                 this.updateIntervalLabel();
+                this.applyConfiguration();
+            }
+
+            loadConfiguration() {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) {
+                        const config = JSON.parse(saved);
+                        this.config = { ...this.defaultConfig, ...config };
+                    } else {
+                        this.config = { ...this.defaultConfig };
+                    }
+                } catch (error) {
+                    console.log('Error loading configuration:', error);
+                    this.config = { ...this.defaultConfig };
+                }
+
+                // Apply loaded configuration
+                this.notificationInterval = this.config.focusDuration;
+                this.breakDuration = this.config.breakDuration;
+                this.autoMode = this.config.autoMode;
+                this.timeLeft = this.notificationInterval * 60;
+                this.totalTime = this.timeLeft;
+            }
+
+            saveConfiguration() {
+                // Update config object with current values
+                this.config.focusDuration = this.notificationInterval;
+                this.config.breakDuration = this.breakDuration;
+                this.config.autoMode = this.autoMode;
+
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.config));
+                    this.showSaveIndicator();
+                } catch (error) {
+                    console.log('Error saving configuration:', error);
+                }
+            }
+
+            applyConfiguration() {
+                // Update UI elements with loaded configuration
+                if (this.focusDurationInput) {
+                    this.focusDurationInput.value = this.config.focusDuration;
+                }
+
+                if (this.breakDurationInput) {
+                    this.breakDurationInput.value = this.config.breakDuration;
+                }
+
+                if (this.autoModeToggle && this.config.autoMode) {
+                    this.autoModeToggle.classList.add('active');
+                }
+
+                if (this.leafBtn && this.config.autoMode) {
+                    this.leafBtn.classList.add('active');
+                }
+            }
+
+            showSaveIndicator() {
+                const indicator = document.getElementById('saveIndicator');
+                if (indicator) {
+                    indicator.classList.add('show');
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                    }, 2000);
+                }
             }
 
             initElements() {
@@ -884,18 +1288,12 @@
                 this.pauseBtn = document.getElementById('pauseBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.focusDurationInput = document.getElementById('focusDurationInput');
-                this.resetDurationBtn = document.getElementById('resetDurationBtn');
                 this.manualMinutes = document.getElementById('manualMinutes');
                 this.manualSeconds = document.getElementById('manualSeconds');
                 this.setManualBtn = document.getElementById('setManualBtn');
                 this.progressBar = document.querySelector('.timer-progress');
                 this.notification = document.getElementById('notification');
                 this.autoModeToggle = document.getElementById('autoModeToggle');
-                this.breakSettingsBtn = document.getElementById('breakSettingsBtn');
-                this.popupOverlay = document.getElementById('popupOverlay');
-                this.breakMinutesInput = document.getElementById('breakMinutesInput');
-                this.popupSaveBtn = document.getElementById('popupSaveBtn');
-                this.popupCancelBtn = document.getElementById('popupCancelBtn');
                 this.permissionIndicator = document.getElementById('permissionIndicator');
                 this.permissionText = document.getElementById('permissionText');
                 this.debugToggleBtn = document.getElementById('debugToggleBtn');
@@ -915,6 +1313,14 @@
                 this.windowsSettings = document.getElementById('windowsSettings');
                 this.testResult = document.getElementById('testResult');
 
+                // New configuration elements
+                this.saveIndicator = document.getElementById('saveIndicator');
+                this.tomatoButtons = document.querySelectorAll('.tomato-btn');
+                this.leafBtn = document.getElementById('autoModeStartBtn');
+                this.settingsBtn = document.getElementById('settingsBtn');
+                this.settingsPanel = document.getElementById('settingsPanel');
+                this.breakDurationInput = document.getElementById('breakDurationInput');
+
                 const circumference = 2 * Math.PI * 90;
                 this.progressBar.style.strokeDasharray = circumference;
                 this.progressBar.style.strokeDashoffset = circumference;
@@ -926,17 +1332,8 @@
                 this.resetBtn.addEventListener('click', () => this.reset());
                 this.setManualBtn.addEventListener('click', () => this.setManualTime());
                 this.autoModeToggle.addEventListener('click', () => this.toggleAutoMode());
-                this.breakSettingsBtn.addEventListener('click', () => this.openBreakSettings());
-                this.popupSaveBtn.addEventListener('click', () => this.saveBreakSettings());
-                this.popupCancelBtn.addEventListener('click', () => this.closeBreakSettings());
-                this.popupOverlay.addEventListener('click', (e) => {
-                    if (e.target === this.popupOverlay) {
-                        this.closeBreakSettings();
-                    }
-                });
                 this.focusDurationInput.addEventListener('change', () => this.updateFocusDuration());
                 this.focusDurationInput.addEventListener('input', () => this.validateFocusDurationInput());
-                this.resetDurationBtn.addEventListener('click', () => this.resetFocusDuration());
                 this.debugToggleBtn.addEventListener('click', () => this.toggleDebugPanel());
                 this.closeDebugBtn.addEventListener('click', () => this.closeDebugPanel());
                 this.testNotificationBtn.addEventListener('click', () => this.testSystemNotification());
@@ -945,6 +1342,27 @@
                 this.testAlertBtn.addEventListener('click', () => this.testAlertSound());
                 this.openSettingsBtn.addEventListener('click', () => this.openWindowsSettings());
                 this.runDiagnosticBtn.addEventListener('click', () => this.runComprehensiveDiagnostic());
+
+                // Settings panel toggle
+                this.settingsBtn.addEventListener('click', () => this.toggleSettingsPanel());
+
+                // Tomato buttons
+                this.tomatoButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const minutes = parseInt(e.target.dataset.minutes);
+                        this.startTempTimer(minutes, e.target);
+                    });
+                });
+
+                // Break duration input
+                if (this.breakDurationInput) {
+                    this.breakDurationInput.addEventListener('change', () => this.updateBreakDuration());
+                }
+
+                // Leaf button - start/stop auto mode
+                if (this.leafBtn) {
+                    this.leafBtn.addEventListener('click', () => this.toggleAutoModeFromLeaf());
+                }
             }
 
             createAudioContext() {
@@ -1598,6 +2016,7 @@
                     }
 
                     this.updateIntervalLabel();
+                    this.saveConfiguration();
                 }
             }
 
@@ -1612,37 +2031,150 @@
                 }
 
                 this.updateIntervalLabel();
-
-                // Visual feedback
-                this.resetDurationBtn.style.background = 'linear-gradient(135deg, #48c774, #3ec46d)';
-                setTimeout(() => {
-                    this.resetDurationBtn.style.background = '';
-                }, 1000);
+                this.saveConfiguration();
             }
 
             toggleAutoMode() {
                 this.autoMode = !this.autoMode;
                 this.autoModeToggle.classList.toggle('active');
+
+                // Sync with leaf button
+                if (this.autoMode) {
+                    this.leafBtn.classList.add('active');
+                } else {
+                    this.leafBtn.classList.remove('active');
+                }
+
+                this.saveConfiguration();
             }
 
-            openBreakSettings() {
-                this.breakMinutesInput.value = this.breakDuration;
-                this.popupOverlay.classList.add('show');
+          
+            startTempTimer(minutes, buttonElement) {
+                // Stop any running timer and clear active states
+                this.reset();
+                this.clearAllActiveStates();
+
+                // Set timer to specified minutes
+                this.timeLeft = minutes * 60;
+                this.totalTime = this.timeLeft;
+                this.isBreakTime = false;
+
+                // Set active state on the clicked button
+                if (buttonElement) {
+                    buttonElement.classList.add('active');
+                    this.activeButton = buttonElement;
+                }
+
+                // Update display
+                this.updateDisplay();
+                this.updateIntervalLabel();
+
+                // Auto-start the timer
+                this.start();
             }
 
-            closeBreakSettings() {
-                this.popupOverlay.classList.remove('show');
+            clearAllActiveStates() {
+                // Clear active state from all buttons
+                this.tomatoButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if (this.leafBtn) {
+                    this.leafBtn.classList.remove('active');
+                }
+                this.activeButton = null;
             }
 
-            saveBreakSettings() {
-                const newBreakDuration = parseInt(this.breakMinutesInput.value);
-                if (newBreakDuration >= 1 && newBreakDuration <= 30) {
-                    this.breakDuration = newBreakDuration;
-                    this.breakSettingsBtn.textContent = `Break: ${this.breakDuration}m`;
-                    this.closeBreakSettings();
+            toggleSettingsPanel() {
+                const isVisible = this.settingsPanel.classList.contains('show');
+
+                if (isVisible) {
+                    this.settingsPanel.classList.remove('show');
+                } else {
+                    this.settingsPanel.classList.add('show');
                 }
             }
 
+            updateBreakDuration() {
+                const newDuration = parseInt(this.breakDurationInput.value);
+                if (newDuration >= 1 && newDuration <= 30) {
+                    this.breakDuration = newDuration;
+                    this.saveConfiguration();
+                }
+            }
+
+            toggleAutoModeFromLeaf() {
+                if (!this.autoMode) {
+                    // Start auto mode
+                    this.autoMode = true;
+                    this.autoModeToggle.classList.add('active');
+                    this.leafBtn.classList.add('active');
+
+                    // Clear other active states but keep auto button active
+                    this.tomatoButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.activeButton = this.leafBtn;
+
+                    // Start with focus session
+                    this.startAutoModeFocus();
+
+                    // Save configuration
+                    this.saveConfiguration();
+                } else {
+                    // Stop auto mode
+                    this.stopAutoMode();
+                }
+            }
+
+            startAutoModeFocus() {
+                // Reset and start with focus session (but don't clear auto button state)
+                this.resetWithoutClearingAuto();
+                this.isBreakTime = false;
+                this.timeLeft = this.notificationInterval * 60;
+                this.totalTime = this.timeLeft;
+
+                // Ensure auto button stays active
+                if (this.leafBtn) {
+                    this.leafBtn.classList.add('active');
+                    this.activeButton = this.leafBtn;
+                }
+
+                this.updateDisplay();
+                this.updateIntervalLabel();
+                this.start();
+            }
+
+            resetWithoutClearingAuto() {
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.isPaused = false;
+                this.timeLeft = this.totalTime;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.pauseBtn.textContent = 'Pause';
+                this.statusText.textContent = 'Ready to focus';
+
+                // Remove urgency mode and reset notifications
+                document.querySelector('.container').classList.remove('urgency-mode');
+                this.resetPageTitle();
+
+                // Clear tomato button active states but preserve auto button if it's active
+                this.tomatoButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                this.updateDisplay();
+            }
+
+            stopAutoMode() {
+                this.autoMode = false;
+                this.autoModeToggle.classList.remove('active');
+                this.leafBtn.classList.remove('active');
+                this.reset();
+                this.saveConfiguration();
+            }
+
+          
             
             pause() {
                 if (this.isRunning && !this.isPaused) {
@@ -1672,6 +2204,9 @@
                 // Remove urgency mode and reset notifications
                 document.querySelector('.container').classList.remove('urgency-mode');
                 this.resetPageTitle();
+
+                // Clear active button states
+                this.clearAllActiveStates();
 
                 this.updateDisplay();
             }
@@ -1761,12 +2296,28 @@
                 this.isBreakTime = true;
                 this.timeLeft = this.breakDuration * 60;
                 this.totalTime = this.timeLeft;
-                this.isRunning = false;
-                this.isPaused = false;
-                this.startBtn.disabled = false;
-                this.pauseBtn.disabled = true;
-                this.pauseBtn.textContent = 'Pause';
-                this.statusText.textContent = 'Break time! ☕';
+
+                if (this.autoMode) {
+                    // In auto mode, continue running automatically
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startBtn.disabled = true;
+                    this.pauseBtn.disabled = false;
+                    this.pauseBtn.textContent = 'Pause';
+                    this.statusText.textContent = 'Auto Break Time! ☕';
+
+                    // Auto-start the break timer
+                    this.interval = setInterval(() => this.tick(), 1000);
+                } else {
+                    // Manual mode - user needs to start break
+                    this.isRunning = false;
+                    this.isPaused = false;
+                    this.startBtn.disabled = false;
+                    this.pauseBtn.disabled = true;
+                    this.pauseBtn.textContent = 'Pause';
+                    this.statusText.textContent = 'Break time! ☕';
+                }
+
                 this.updateDisplay();
                 this.updateIntervalLabel();
 
@@ -1786,12 +2337,28 @@
                 this.isBreakTime = false;
                 this.timeLeft = this.notificationInterval * 60;
                 this.totalTime = this.timeLeft;
-                this.isRunning = false;
-                this.isPaused = false;
-                this.startBtn.disabled = false;
-                this.pauseBtn.disabled = true;
-                this.pauseBtn.textContent = 'Pause';
-                this.statusText.textContent = 'Ready to focus';
+
+                if (this.autoMode) {
+                    // In auto mode, continue running automatically
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startBtn.disabled = true;
+                    this.pauseBtn.disabled = false;
+                    this.pauseBtn.textContent = 'Pause';
+                    this.statusText.textContent = 'Auto Focus Time! 🍅';
+
+                    // Auto-start the focus timer
+                    this.interval = setInterval(() => this.tick(), 1000);
+                } else {
+                    // Manual mode - user needs to start focus session
+                    this.isRunning = false;
+                    this.isPaused = false;
+                    this.startBtn.disabled = false;
+                    this.pauseBtn.disabled = true;
+                    this.pauseBtn.textContent = 'Pause';
+                    this.statusText.textContent = 'Ready to focus';
+                }
+
                 this.updateDisplay();
                 this.updateIntervalLabel();
 
