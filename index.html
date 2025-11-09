@@ -965,6 +965,19 @@
             opacity: 1;
         }
 
+        .version-label {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            pointer-events: none;
+            user-select: none;
+            z-index: 900;
+        }
+
         .notification-badge {
             position: fixed;
             top: 20px;
@@ -1309,7 +1322,8 @@
         ✅ Configuration saved
     </div>
 
-  
+    <div class="version-label">v1.0.2</div>
+
     <script>
         class TomatoTimer {
             constructor() {
