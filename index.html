@@ -1324,6 +1324,7 @@
                 this.isBreakTime = false;
                 this.notificationsEnabled = false;
                 this.userInteracted = false;
+                this.isMacOS = (navigator.platform && navigator.platform.toUpperCase().includes('MAC')) || navigator.userAgent.includes('Mac OS X');
 
                 // Configuration storage key
                 this.storageKey = 'tomato-timer-config';
@@ -2058,30 +2059,36 @@
                         // Update page title to grab attention
                         this.updatePageTitle('⏰ ' + title);
 
-                        // Create persistent notification without emoji in SVG
-                        const notification = new Notification(title, {
+                        const baseOptions = {
                             body: body,
-                            icon: 'data:image/svg+xml;base64,' + btoa(`
-                                <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="64" cy="64" r="60" fill="#ff6b6b"/>
-                                    <circle cx="50" cy="55" r="8" fill="white"/>
-                                    <circle cx="78" cy="55" r="8" fill="white"/>
-                                    <path d="M 45 75 Q 64 85 83 75" stroke="white" stroke-width="4" fill="none"/>
-                                </svg>
-                            `),
-                            badge: 'data:image/svg+xml;base64,' + btoa(`
-                                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="24" cy="24" r="20" fill="#ff6b6b"/>
-                                    <circle cx="18" cy="20" r="3" fill="white"/>
-                                    <circle cx="30" cy="20" r="3" fill="white"/>
-                                    <path d="M 16 28 Q 24 32 32 28" stroke="white" stroke-width="2" fill="none"/>
-                                </svg>
-                            `),
-                            tag: 'tomato-timer-' + Date.now(), // Unique tag to ensure multiple notifications
-                            renotify: true,
-                            requireInteraction: true, // Keep notification until user dismisses
-                            silent: false
-                        });
+                            tag: 'tomato-timer-' + Date.now()
+                        };
+
+                        if (!this.isMacOS) {
+                            Object.assign(baseOptions, {
+                                icon: 'data:image/svg+xml;base64,' + btoa(`
+                                    <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="64" cy="64" r="60" fill="#ff6b6b"/>
+                                        <circle cx="50" cy="55" r="8" fill="white"/>
+                                        <circle cx="78" cy="55" r="8" fill="white"/>
+                                        <path d="M 45 75 Q 64 85 83 75" stroke="white" stroke-width="4" fill="none"/>
+                                    </svg>
+                                `),
+                                badge: 'data:image/svg+xml;base64,' + btoa(`
+                                    <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="24" cy="24" r="20" fill="#ff6b6b"/>
+                                        <circle cx="18" cy="20" r="3" fill="white"/>
+                                        <circle cx="30" cy="20" r="3" fill="white"/>
+                                        <path d="M 16 28 Q 24 32 32 28" stroke="white" stroke-width="2" fill="none"/>
+                                    </svg>
+                                `),
+                                renotify: true,
+                                requireInteraction: true,
+                                silent: false
+                            });
+                        }
+
+                        const notification = new Notification(title, baseOptions);
 
                         // Add click handler to focus the window
                         notification.onclick = () => {
@@ -2094,31 +2101,37 @@
                         // Enhanced vibration pattern
                         this.safeVibrate([300, 150, 300, 150, 300]);
 
-                        // Send additional notifications after delays if user hasn't responded
-                        this.notificationReminders = 0;
-                        this.notificationInterval = setInterval(() => {
-                            if (this.notificationReminders < 2) { // Max 2 reminders
-                                this.playSound('focus');
+                        if (this.isMacOS) {
+                            setTimeout(() => {
+                                notification.close();
+                            }, 5000);
+                        } else {
+                            // Send additional notifications after delays if user hasn't responded
+                            this.notificationReminders = 0;
+                            this.notificationInterval = setInterval(() => {
+                                if (this.notificationReminders < 2) { // Max 2 reminders
+                                    this.playSound('focus');
 
-                                // Briefly flash the title
-                                const originalTitle = document.title;
-                                document.title = '⏰⏰⏰ ' + title.toUpperCase() + ' ⏰⏰⏰';
-                                setTimeout(() => {
-                                    document.title = originalTitle;
-                                }, 2000);
+                                    // Briefly flash the title
+                                    const originalTitle = document.title;
+                                    document.title = '⏰⏰⏰ ' + title.toUpperCase() + ' ⏰⏰⏰';
+                                    setTimeout(() => {
+                                        document.title = originalTitle;
+                                    }, 2000);
 
-                                this.safeVibrate([200, 100, 200]);
+                                    this.safeVibrate([200, 100, 200]);
 
-                                this.notificationReminders++;
-                            } else {
+                                    this.notificationReminders++;
+                                } else {
+                                    clearInterval(this.notificationInterval);
+                                }
+                            }, 30000); // Every 30 seconds
+
+                            // Auto-stop reminders after 2 minutes
+                            setTimeout(() => {
                                 clearInterval(this.notificationInterval);
-                            }
-                        }, 30000); // Every 30 seconds
-
-                        // Auto-stop reminders after 2 minutes
-                        setTimeout(() => {
-                            clearInterval(this.notificationInterval);
-                        }, 120000);
+                            }, 120000);
+                        }
 
                     } catch (error) {
                         console.error('Error sending notification:', error);
