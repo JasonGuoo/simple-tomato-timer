@@ -1322,7 +1322,7 @@
         ✅ Configuration saved
     </div>
 
-    <div class="version-label">v1.1.0</div>
+    <div class="version-label">v1.1.1</div>
 
     <script>
         class TomatoTimer {
@@ -2286,7 +2286,6 @@
                 }
 
                 this.updateIntervalLabel();
-                this.saveConfiguration();
             }
 
             toggleAutoMode() {
@@ -2712,12 +2711,12 @@
                     if (this.isBreakTime) {
                         document.title = `☕ Break: ${timeString} - Tomato Timer`;
                     } else if (this.autoMode) {
-                        document.title = `🍅 Focus: ${timeString} - Auto Tomato Timer`;
+                        document.title = `🍅 ${timeString} - Auto Tomato Timer`;
                     } else {
-                        document.title = `⏰ Timer: ${timeString} - Tomato Timer`;
+                        document.title = `⏰ ${timeString} - Tomato Timer`;
                     }
                 } else if (this.isPaused) {
-                    document.title = `⏸️ Paused: ${timeString} - Tomato Timer`;
+                    document.title = `⏸️ ${timeString} - Tomato Timer`;
                 } else {
                     document.title = '🍅 Tomato Timer - Simple & Clean';
                 }
