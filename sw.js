@@ -1,10 +1,11 @@
-const CACHE_NAME = 'tomato-timer-v1';
+const CACHE_NAME = 'tomato-timer-v3';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icon-192x192.png',
-    '/icon-512x512.png'
+    './',
+    './index.html',
+    './style.css',
+    './script.js',
+    './manifest.json',
+    './icon.svg'
 ];
 
 // Install the service worker and cache files
