@@ -284,6 +284,61 @@ h1 {
     font-size: 1.2rem;
 }
 
+/* Loop Control */
+.loop-control {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.loop-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.loop-switch input[type="checkbox"] {
+    display: none;
+}
+
+.loop-slider {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: #ddd;
+    border-radius: 13px;
+    transition: background 0.3s ease;
+}
+
+.loop-slider::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.loop-switch input[type="checkbox"]:checked + .loop-slider {
+    background: var(--primary);
+}
+
+.loop-switch input[type="checkbox"]:checked + .loop-slider::before {
+    transform: translateX(22px);
+}
+
+.loop-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+}
+
 /* Presets */
 .presets {
     display: flex;

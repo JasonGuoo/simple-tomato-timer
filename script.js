@@ -5,6 +5,7 @@ class CuteTimer {
         this.isRunning = false;
         this.interval = null;
         this.mode = 'focus'; // focus, short, long
+        this.isLoopMode = false; // loop mode toggle
 
         // Default Settings
         this.settings = {
@@ -63,6 +64,9 @@ class CuteTimer {
             long: document.getElementById('longBreak')
         };
 
+        // Loop Elements
+        this.loopToggle = document.getElementById('loopToggle');
+
         // Audio Context
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -74,6 +78,7 @@ class CuteTimer {
         this.bindEvents();
         this.requestNotificationPermission();
         this.loadSettings();
+        this.loadLoopMode();
 
         // Show welcome message
         setTimeout(() => this.showMessage("Hi there! Ready to focus? 🍅"), 1000);
@@ -95,6 +100,9 @@ class CuteTimer {
         this.settingsBtn.addEventListener('click', () => this.openSettings());
         this.closeSettingsBtn.addEventListener('click', () => this.closeSettings());
         this.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
+
+        // Loop toggle
+        this.loopToggle.addEventListener('change', (e) => this.handleLoopToggle(e));
 
         // Close modal when clicking outside
         window.addEventListener('click', (e) => {
@@ -255,6 +263,65 @@ class CuteTimer {
 
         this.sendNotification(title, body);
         this.showMessage(title + " " + body, 5000);
+
+        // Handle loop mode
+        if (this.isLoopMode && this.shouldContinueLoop()) {
+            setTimeout(() => this.startNextLoopSession(), 2000);
+        }
+    }
+
+    handleLoopToggle(e) {
+        this.isLoopMode = e.target.checked;
+        if (this.isLoopMode) {
+            this.showMessage("Loop mode enabled! Will cycle until 19:00 🔄");
+        } else {
+            this.showMessage("Loop mode disabled");
+        }
+        // Save loop mode preference
+        localStorage.setItem('tomato-loop-mode', this.isLoopMode);
+    }
+
+    shouldContinueLoop() {
+        const now = new Date();
+        const currentHour = now.getHours();
+
+        // Stop loop at 19:00 (7 PM)
+        if (currentHour >= 19) {
+            this.showMessage("Loop mode ended! It's 19:00 or later 🌙", 5000);
+            this.isLoopMode = false;
+            this.loopToggle.checked = false;
+            localStorage.setItem('tomato-loop-mode', false);
+            return false;
+        }
+
+        return true;
+    }
+
+    startNextLoopSession() {
+        // Determine next mode in the loop cycle
+        let nextMode;
+        if (this.mode === 'focus') {
+            nextMode = 'short'; // Focus -> Short Break
+        } else {
+            nextMode = 'focus'; // Any break -> Focus
+        }
+
+        this.setMode(nextMode);
+        this.startTimer();
+
+        const modeMessage = nextMode === 'focus' ?
+            this.messages.focus[Math.floor(Math.random() * this.messages.focus.length)] :
+            this.messages.break[Math.floor(Math.random() * this.messages.break.length)];
+
+        this.showMessage(`Loop: ${modeMessage}`, 3000);
+    }
+
+    loadLoopMode() {
+        const saved = localStorage.getItem('tomato-loop-mode');
+        if (saved !== null) {
+            this.isLoopMode = saved === 'true';
+            this.loopToggle.checked = this.isLoopMode;
+        }
     }
 
     updateDisplay() {
